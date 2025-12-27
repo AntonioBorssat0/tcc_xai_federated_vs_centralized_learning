@@ -6,7 +6,7 @@ Nesse arquivo você encontrará instruções detalhadas para reproduzir todos os
 
 O artigo do projeto pode ser encontrado abaixo:
 
-[![Ler Artigo](https://img.shields.io/badge/PDF-Ler_Artigo_Completo-EC1C24?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](https://github.com/AntonioBorssat0/tcc_xai_federated_vs_centralized_learning/blob/427f1e14244fcf8fde0cf042d1592c7fe5f1874f/artigo_do_projeto/Eles%20aprendem%20diferente%20-%20Investigando%20padr%C3%B5es%20de%20aprendizado%20em%20modelos%20federados%20globais%20e%20centralizados%20com%20t%C3%A9cnicas%20de%20Explainable%20AI%20(XAI).pdf)
+[![Ler Artigo](https://img.shields.io/badge/PDF-Ler_Artigo_Completo-EC1C24?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](https://github.com/AntonioBorssat0/tcc_xai_federated_vs_centralized_learning/blob/c17684a212728c17757d0ccd687323551191f415/artigo_do_projeto/Eles%20aprendem%20diferente%20-%20Investigando%20padr%C3%B5es%20de%20aprendizado%20em%20modelos%20federados%20globais%20e%20centralizados%20com%20t%C3%A9cnicas%20de%20Explainable%20AI%20(XAI).pdf)
 
 ## Sumário
 

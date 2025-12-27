@@ -269,7 +269,7 @@ poetry run flwr run .
 
 ```bash
 cd ../flwr-xgboost
-poetry run flwr run . --run-config strategy=bagging
+poetry run flwr run . --run-config "strategy='bagging'"
 ```
 
 - **Estratégia**: Todos os clientes treinam em paralelo, árvores são agregadas
@@ -281,7 +281,7 @@ poetry run flwr run . --run-config strategy=bagging
 ### 6. Treinar XGBoost Federado (Cyclic)
 
 ```bash
-poetry run flwr run . --run-config strategy=cyclic
+poetry run flwr run . --run-config "strategy='cyclic'"
 ```
 
 - **Estratégia**: Clientes treinam um por vez, modelo é passado sequencialmente

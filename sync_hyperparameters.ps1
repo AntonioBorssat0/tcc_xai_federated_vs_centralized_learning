@@ -5,6 +5,10 @@
 
 $projectRoot = $PSScriptRoot
 
+# Funções auxiliares de log
+function Write-Header { param([string]$msg) Write-Host $msg -ForegroundColor Cyan }
+function Write-Info { param([string]$msg) Write-Host "  [INFO] $msg" -ForegroundColor Gray }
+function Write-Success { param([string]$msg) Write-Host "  [OK] $msg" -ForegroundColor Green }
 
 # FUNÇÃO: Atualizar arquivo TOML com par chave-valor
 

@@ -1,0 +1,21 @@
+[
+  "MinTemp",
+  "MaxTemp",
+  "Rainfall",
+  "WindGustSpeed",
+  "WindSpeed9am",
+  "WindSpeed3pm",
+  "Humidity9am",
+  "Humidity3pm",
+  "Pressure9am",
+  "Pressure3pm",
+  "Temp9am",
+  "Temp3pm",
+  "RainToday",
+  "WindGustDir_sin",
+  "WindGustDir_cos",
+  "WindDir9am_sin",
+  "WindDir9am_cos",
+  "WindDir3pm_sin",
+  "WindDir3pm_cos"
+]

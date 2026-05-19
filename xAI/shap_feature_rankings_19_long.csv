@@ -1,0 +1,96 @@
+Modelo,Rank,Feature,Importance
+MLP Centralizado,1,Pressure3pm,1.8041041008857184
+MLP Centralizado,2,Pressure9am,1.2151055355463385
+MLP Centralizado,3,Humidity3pm,1.1723358538794162
+MLP Centralizado,4,WindGustSpeed,0.5509387834332737
+MLP Centralizado,5,Temp3pm,0.5221955123947396
+MLP Centralizado,6,MinTemp,0.4175529027183628
+MLP Centralizado,7,Temp9am,0.3749334679201422
+MLP Centralizado,8,MaxTemp,0.3726114386038914
+MLP Centralizado,9,WindSpeed3pm,0.350188043059586
+MLP Centralizado,10,WindDir9am_cos,0.3168079593961471
+MLP Centralizado,11,WindDir3pm_cos,0.2233725583660968
+MLP Centralizado,12,Humidity9am,0.197759243977598
+MLP Centralizado,13,WindDir9am_sin,0.1976272150661405
+MLP Centralizado,14,WindGustDir_sin,0.1935259143377385
+MLP Centralizado,15,WindDir3pm_sin,0.1760563694486825
+MLP Centralizado,16,WindSpeed9am,0.1701824137210269
+MLP Centralizado,17,WindGustDir_cos,0.1695802142599022
+MLP Centralizado,18,Rainfall,0.1167726419295547
+MLP Centralizado,19,RainToday,0.1034359506508883
+MLP Federado (FedAvg),1,Pressure3pm,1.7800791431842526
+MLP Federado (FedAvg),2,Pressure9am,1.2348894861035702
+MLP Federado (FedAvg),3,Humidity3pm,1.0273592953539703
+MLP Federado (FedAvg),4,WindGustSpeed,0.6501466342655754
+MLP Federado (FedAvg),5,MaxTemp,0.3614417099804293
+MLP Federado (FedAvg),6,Temp3pm,0.3398173952824561
+MLP Federado (FedAvg),7,MinTemp,0.2939240857477699
+MLP Federado (FedAvg),8,WindDir9am_cos,0.2879767829068347
+MLP Federado (FedAvg),9,WindDir3pm_cos,0.2609116668986878
+MLP Federado (FedAvg),10,WindGustDir_sin,0.2511631564043071
+MLP Federado (FedAvg),11,Temp9am,0.2393587571456433
+MLP Federado (FedAvg),12,WindDir3pm_sin,0.2277261432995719
+MLP Federado (FedAvg),13,WindDir9am_sin,0.2201411939676609
+MLP Federado (FedAvg),14,WindGustDir_cos,0.2140986752530018
+MLP Federado (FedAvg),15,WindSpeed3pm,0.2101860427496526
+MLP Federado (FedAvg),16,Humidity9am,0.1785503341516568
+MLP Federado (FedAvg),17,WindSpeed9am,0.1673612758550671
+MLP Federado (FedAvg),18,RainToday,0.127977067469281
+MLP Federado (FedAvg),19,Rainfall,0.0494893038515211
+XGBoost Centralizado,1,Humidity3pm,1.1208941
+XGBoost Centralizado,2,Pressure3pm,0.70926756
+XGBoost Centralizado,3,WindGustSpeed,0.49917063
+XGBoost Centralizado,4,Pressure9am,0.29975468
+XGBoost Centralizado,5,Rainfall,0.21414575
+XGBoost Centralizado,6,MinTemp,0.18937124
+XGBoost Centralizado,7,Temp3pm,0.1768681
+XGBoost Centralizado,8,MaxTemp,0.17520843
+XGBoost Centralizado,9,WindSpeed3pm,0.16367766
+XGBoost Centralizado,10,WindDir3pm_cos,0.14911166
+XGBoost Centralizado,11,WindDir9am_cos,0.11196781
+XGBoost Centralizado,12,Temp9am,0.09697522
+XGBoost Centralizado,13,Humidity9am,0.09114226
+XGBoost Centralizado,14,WindDir9am_sin,0.07567941
+XGBoost Centralizado,15,WindSpeed9am,0.07191459
+XGBoost Centralizado,16,WindGustDir_cos,0.06055456
+XGBoost Centralizado,17,WindGustDir_sin,0.05046032
+XGBoost Centralizado,18,WindDir3pm_sin,0.04694527
+XGBoost Centralizado,19,RainToday,0.02110907
+XGBoost Fed. (Bagging),1,Humidity3pm,1.3878343
+XGBoost Fed. (Bagging),2,Pressure3pm,0.36064255
+XGBoost Fed. (Bagging),3,WindGustSpeed,0.33999863
+XGBoost Fed. (Bagging),4,Pressure9am,0.17852455
+XGBoost Fed. (Bagging),5,Temp3pm,0.17689213
+XGBoost Fed. (Bagging),6,WindDir3pm_cos,0.15360479
+XGBoost Fed. (Bagging),7,Rainfall,0.13698421
+XGBoost Fed. (Bagging),8,MinTemp,0.101037264
+XGBoost Fed. (Bagging),9,Temp9am,0.06364789
+XGBoost Fed. (Bagging),10,Humidity9am,0.057736106
+XGBoost Fed. (Bagging),11,WindGustDir_cos,0.04116038
+XGBoost Fed. (Bagging),12,WindSpeed9am,0.0397373
+XGBoost Fed. (Bagging),13,WindSpeed3pm,0.038722314
+XGBoost Fed. (Bagging),14,WindDir3pm_sin,0.03382032
+XGBoost Fed. (Bagging),15,WindGustDir_sin,0.032404505
+XGBoost Fed. (Bagging),16,WindDir9am_sin,0.028353252
+XGBoost Fed. (Bagging),17,MaxTemp,0.008110856
+XGBoost Fed. (Bagging),18,WindDir9am_cos,0.0014971696
+XGBoost Fed. (Bagging),19,RainToday,0.0
+XGBoost Fed. (Cyclic),1,Humidity3pm,1.1031325
+XGBoost Fed. (Cyclic),2,Pressure3pm,0.8311576
+XGBoost Fed. (Cyclic),3,WindGustSpeed,0.5537384
+XGBoost Fed. (Cyclic),4,MaxTemp,0.3639365
+XGBoost Fed. (Cyclic),5,Temp3pm,0.30532938
+XGBoost Fed. (Cyclic),6,MinTemp,0.29792553
+XGBoost Fed. (Cyclic),7,Temp9am,0.2334825
+XGBoost Fed. (Cyclic),8,Pressure9am,0.23044538
+XGBoost Fed. (Cyclic),9,Rainfall,0.2247644
+XGBoost Fed. (Cyclic),10,Humidity9am,0.21315454
+XGBoost Fed. (Cyclic),11,WindDir3pm_cos,0.18373238
+XGBoost Fed. (Cyclic),12,WindGustDir_cos,0.14907406
+XGBoost Fed. (Cyclic),13,WindDir9am_cos,0.14850059
+XGBoost Fed. (Cyclic),14,WindDir9am_sin,0.121785864
+XGBoost Fed. (Cyclic),15,WindSpeed9am,0.11393482
+XGBoost Fed. (Cyclic),16,WindSpeed3pm,0.111530714
+XGBoost Fed. (Cyclic),17,WindGustDir_sin,0.101095885
+XGBoost Fed. (Cyclic),18,WindDir3pm_sin,0.09560038
+XGBoost Fed. (Cyclic),19,RainToday,0.024369469

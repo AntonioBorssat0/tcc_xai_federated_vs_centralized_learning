@@ -131,6 +131,25 @@ def build_predict_fn(model, scaler, feature_names):
     raise RuntimeError("Modelo não expõe API de predição utilizável (predict_proba/predict ou não é modelo torch)")
 
 
+def _extract_lime_local_r2(explanation, label: int) -> float:
+    """Extrai a fidelidade local (R²) do LIME, quando disponível."""
+
+    score = getattr(explanation, "score", None)
+    if score is None:
+        return float("nan")
+
+    try:
+        if isinstance(score, dict):
+            return float(score.get(label, np.nan))
+        if isinstance(score, (list, tuple, np.ndarray)):
+            if 0 <= label < len(score):
+                return float(score[label])
+            return float("nan")
+        return float(score)
+    except Exception:
+        return float("nan")
+
+
 def explain_instances(args):
     project_root = Path(__file__).resolve().parent.parent
 
@@ -210,10 +229,13 @@ def explain_instances(args):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     per_instance_records = []
+    fidelity_records = []
 
     print(f"Gerando explicações LIME para {len(chosen_local)} instâncias...")
     for local_idx, orig_idx in zip(chosen_local, chosen):
         x_row_trans = X_pool[local_idx].reshape(1, -1)
+
+        model_prob = float(predict_proba(x_row_trans)[0, 1])
 
         explanation = explainer.explain_instance(
             x_row_trans[0],
@@ -221,6 +243,15 @@ def explain_instances(args):
             num_features=args.num_features,
             num_samples=args.num_samples,
             labels=(1,)
+        )
+
+        fidelity_records.append(
+            {
+                "index": int(orig_idx),
+                "true_label": int(y_pool[local_idx]),
+                "model_prob": model_prob,
+                "local_fidelity_r2": _extract_lime_local_r2(explanation, label=1),
+            }
         )
 
         elist = explanation.as_list(label=1)
@@ -234,6 +265,10 @@ def explain_instances(args):
     if len(per_instance_records) == 0:
         print("Nenhuma explicação foi gerada. Saindo.")
         return
+
+    fidelity_df = pd.DataFrame(fidelity_records)
+    fidelity_df = fidelity_df[["index", "true_label", "model_prob", "local_fidelity_r2"]]
+    fidelity_df.to_csv(out_dir / "lime_instance_fidelity.csv", index=False)
 
     all_df = pd.concat(per_instance_records, ignore_index=True)
 

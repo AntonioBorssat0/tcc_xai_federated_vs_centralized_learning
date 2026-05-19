@@ -1,0 +1,6 @@
+Modelo,mean_r2,std_r2,n,path
+XGBoost Centralizado,0.615200874969179,0.08117279435139367,200,lime_results_centralized\xgboost\lime_instance_fidelity.csv
+MLP Centralizado,0.9842111213157695,0.013181193577710687,200,lime_results_centralized\mlp\lime_instance_fidelity.csv
+MLP Federado (FedAvg),0.7168070420559406,0.024147175327289962,200,lime_results_federated\mlp\lime_instance_fidelity.csv
+XGBoost Fed. (Bagging),0.5988457617653511,0.21414135572666887,200,lime_results_federated\xgboost\bagging_strategy\lime_instance_fidelity.csv
+XGBoost Fed. (Cyclic),0.5980893238377815,0.0855238011041903,200,lime_results_federated\xgboost\cyclic_strategy\lime_instance_fidelity.csv

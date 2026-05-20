@@ -193,6 +193,21 @@ def explain_instances_federated_mlp(args):
     else:
         raise FileNotFoundError(f"Modelo federado não encontrado em {joblib_path} nem {legacy_pt}")
 
+    scaler_to_use = scaler
+    if scaler_to_use is None:
+        # O treinamento federado usa StandardScaler por cliente (fit no treino local).
+        # Para gerar LIME global de forma reprodutível e consistente com outros modelos,
+        # ajustamos UM scaler no split global de treino e reutilizamos para tudo.
+        from sklearn.preprocessing import StandardScaler
+
+        if prepare_weather_data is not None:
+            df_train_processed = prepare_weather_data(df.loc[train_indices].copy(), use_location=False)
+        else:
+            df_train_processed = df.loc[train_indices].copy()
+
+        X_train_np = df_train_processed.drop(columns=[LABEL_COL]).values
+        scaler_to_use = StandardScaler().fit(X_train_np)
+
     def preprocess_mlp(df_shap: pd.DataFrame):
         df_processed = prepare_weather_data(df_shap.copy(), use_location=False) if prepare_weather_data is not None else df_shap.copy()
         X_df = df_processed.drop(columns=[LABEL_COL])
@@ -200,13 +215,11 @@ def explain_instances_federated_mlp(args):
         feat_names = X_df.columns.tolist()
         X_np = X_df.values
         y_np = y_series.values
-        # Se scaler disponível, usa o mesmo do treino; senão cria local
-        if scaler is not None:
-            X_scaled = scaler.transform(X_np)
+        # Aplica scaler consistente (do artefato, ou fallback fit no treino global)
+        if scaler_to_use is not None:
+            X_scaled = scaler_to_use.transform(X_np)
         else:
-            from sklearn.preprocessing import StandardScaler as _SS
-            local_scaler = _SS()
-            X_scaled = local_scaler.fit_transform(X_np)
+            X_scaled = X_np
         X_scaled = np.nan_to_num(X_scaled, nan=0.0, posinf=0.0, neginf=0.0)
         return X_scaled, y_np, feat_names
 

@@ -58,7 +58,8 @@ def _extract_lime_local_r2(explanation, label: int) -> float:
         return float("nan")
 
 def fix_base_score_in_json(json_path: str) -> str:
-    """Corrige base_score no JSON (de '[2.2154084E-1]' para '0.22154084'). Retorna path do JSON temporrio fixado."""
+    """Corrige `base_score` no JSON (de '[2.2154084E-1]' para '0.22154084').
+    Retorna o caminho do arquivo JSON temporário corrigido."""
     with open(json_path, 'r', encoding='utf8') as f:
         model_text = f.read()
 
@@ -103,7 +104,7 @@ def load_xgboost_model_fixing_json(model_path: str):
             bst_temp.load_model(model_path)
             print("Booster carregado de path direto")
 
-        # Salva em JSON temp e aplica fix de base_score
+        # Salva em JSON temporário e aplica correção de `base_score`
         tmp_json_1 = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
         tmp_json_1.close()
         bst_temp.save_model(tmp_json_1.name)

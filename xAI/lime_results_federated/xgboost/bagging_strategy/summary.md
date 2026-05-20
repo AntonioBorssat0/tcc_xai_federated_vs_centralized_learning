@@ -1,37 +1,37 @@
 # Resumo LIME - XGBoost Federado (Bagging)
 Instâncias explicadas (sample_count): 2000
 Top 19 features (global, mean |weight|):
-- Humidity3pm: 0.212853
-- Pressure3pm: 0.059376
-- WindGustSpeed: 0.051776
-- Rainfall: 0.025360
-- WindDir3pm_cos: 0.020845
-- Temp3pm: 0.020170
-- Pressure9am: 0.019726
-- MinTemp: 0.012073
-- Humidity9am: 0.007443
-- WindGustDir_cos: 0.005870
-- WindSpeed3pm: 0.005776
-- WindSpeed9am: 0.005594
-- WindDir9am_sin: 0.005563
-- WindGustDir_sin: 0.005326
-- RainToday: 0.005313
-- Temp9am: 0.005296
-- WindDir3pm_sin: 0.005286
-- WindDir9am_cos: 0.005285
-- MaxTemp: 0.005271
+- Humidity3pm: 0.276963
+- Pressure3pm: 0.087259
+- WindGustSpeed: 0.076209
+- Rainfall: 0.023960
+- Pressure9am: 0.019119
+- MinTemp: 0.016744
+- WindGustDir_cos: 0.016279
+- Temp3pm: 0.014427
+- WindSpeed9am: 0.007278
+- WindSpeed3pm: 0.007264
+- Temp9am: 0.007084
+- WindDir9am_sin: 0.007045
+- WindDir3pm_cos: 0.006805
+- RainToday: 0.006775
+- WindDir9am_cos: 0.006742
+- Humidity9am: 0.006732
+- MaxTemp: 0.006641
+- WindDir3pm_sin: 0.006616
+- WindGustDir_sin: 0.006593
 
 Diferenças mean |weight| (classe 0 - classe 1) (top 10 por abs diff):
-- Humidity3pm: classe0=0.210346, classe1=0.221668, diff=-0.011323
-- WindGustSpeed: classe0=0.051394, classe1=0.053121, diff=-0.001727
-- Temp3pm: classe0=0.019791, classe1=0.021503, diff=-0.001712
-- Pressure3pm: classe0=0.059015, classe1=0.060646, diff=-0.001631
-- Pressure9am: classe0=0.019551, classe1=0.020341, diff=-0.000790
-- Humidity9am: classe0=0.007313, classe1=0.007903, diff=-0.000591
-- WindDir9am_cos: classe0=0.005192, classe1=0.005610, diff=-0.000417
-- WindGustDir_sin: classe0=0.005244, classe1=0.005615, diff=-0.000371
-- WindSpeed9am: classe0=0.005524, classe1=0.005839, diff=-0.000315
-- WindDir3pm_cos: classe0=0.020782, classe1=0.021064, diff=-0.000282
+- Humidity3pm: classe0=0.275299, classe1=0.282810, diff=-0.007511
+- Pressure3pm: classe0=0.086851, classe1=0.088694, diff=-0.001843
+- WindGustSpeed: classe0=0.075993, classe1=0.076968, diff=-0.000975
+- Temp3pm: classe0=0.014251, classe1=0.015047, diff=-0.000796
+- WindGustDir_cos: classe0=0.016146, classe1=0.016748, diff=-0.000602
+- WindDir9am_cos: classe0=0.006640, classe1=0.007099, diff=-0.000459
+- Pressure9am: classe0=0.019209, classe1=0.018803, diff=0.000406
+- Humidity9am: classe0=0.006803, classe1=0.006482, diff=0.000322
+- MaxTemp: classe0=0.006692, classe1=0.006463, diff=0.000229
+- WindGustDir_sin: classe0=0.006551, classe1=0.006742, diff=-0.000191
 
 Arquivos gerados:
 - comparison_class_0_vs_1.csv
@@ -45,14 +45,6 @@ Arquivos gerados:
 - lime_xgb_bagging_class_1_mean_abs_weight_top19.png
 - lime_xgb_bagging_feature_weight_distribution_top19.png
 - lime_xgb_bagging_global_mean_abs_weight_top19.png
-- lime_xgb_bagging_heatmap_top19_rows200.png
 - lime_xgb_bagging_heatmap_top19_rows300.png
-- lime_xgb_bagging_waterfall_idx100001_label0.png
-- lime_xgb_bagging_waterfall_idx101738_label1.png
-- lime_xgb_bagging_waterfall_idx12999_label1.png
-- lime_xgb_bagging_waterfall_idx40595_label1.png
-- lime_xgb_bagging_waterfall_idx41030_label0.png
-- lime_xgb_bagging_waterfall_idx42430_label1.png
-- lime_xgb_bagging_waterfall_idx54550_label0.png
-- lime_xgb_bagging_waterfall_idx66633_label0.png
-- summary.md
+- lime_xgb_bagging_waterfall_idx74993_label0.png
+- lime_xgb_bagging_waterfall_idx87299_label1.png

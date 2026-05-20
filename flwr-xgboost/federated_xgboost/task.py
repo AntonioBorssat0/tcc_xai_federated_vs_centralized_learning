@@ -31,17 +31,17 @@ def _encode_wind_directions_cyclic(df: pd.DataFrame, wind_cols=WIND_COLS):
         df: DataFrame com colunas de direção de vento
         wind_cols: Tupla com nomes das colunas de vento
     
-    Returns:
-        DataFrame com colunas _sin e _cos substituindo direções originais
-    
-    Nota: Valores ausentes/desconhecidos são substituídos por 0.0
+    Retorna:
+        DataFrame com colunas _sin e _cos substituindo as direções originais
+
+    Observação: valores ausentes ou desconhecidos são substituídos por 0.0
     """
     df = df.copy()
     for col in wind_cols:
         if col not in df.columns:
             continue
 
-        # Normalização de strings e mapeamento para graus
+        # Normaliza strings e converte para graus
         raw = df[col].astype(str).str.strip().str.upper()
         mapped_deg = raw.map(DIR_TO_DEG).astype(float)
 
@@ -49,7 +49,7 @@ def _encode_wind_directions_cyclic(df: pd.DataFrame, wind_cols=WIND_COLS):
         sin_col = f"{col}_sin"
         cos_col = f"{col}_cos"
 
-        # Cálculo de sin/cos; NaN substituído por 0.0
+        # Calcula sin/cos; NaN é substituído por 0.0
         df[sin_col] = np.sin(rad).fillna(0.0)
         df[cos_col] = np.cos(rad).fillna(0.0)
 
@@ -68,11 +68,11 @@ def _preprocess_train_valid(train_df: pd.DataFrame, valid_df: pd.DataFrame, keep
         keep_location: Se True, mantém Location como feature categórica (para comparação).
                       Se False, remove Location (padrão para federado).
     
-    Returns:
+    Retorna:
         tuple: (dtrain, dvalid) como objetos xgb.DMatrix
     
     Etapas:
-      - Aplica encoding cíclico para colunas de direção de vento
+    - Aplica encoding cíclico nas colunas de direção de vento
       - Trata coluna Location baseado no parâmetro keep_location
       - Garante que target seja numérico (0/1)
       - Imputa features numéricas com medianas do treino
@@ -81,14 +81,14 @@ def _preprocess_train_valid(train_df: pd.DataFrame, valid_df: pd.DataFrame, keep
     train = train_df.copy()
     valid = valid_df.copy()
 
-    # Conversão de label para numérico se necessário (trata 'Yes'/'No' ou 0/1)
+    # Converte o rótulo para numérico, se necessário (trata 'Yes'/'No' ou 0/1)
     for df_name, df in [("train", train), ("valid", valid)]:
         if LABEL_COL in df.columns:
             if df[LABEL_COL].dtype == object:
                 df[LABEL_COL] = df[LABEL_COL].map({"Yes": 1, "No": 0})
             df[LABEL_COL] = pd.to_numeric(df[LABEL_COL], errors="coerce").fillna(0).astype(int)
 
-        # Conversão de RainToday para numérico se necessário
+        # Converte RainToday para numérico, se necessário
         if 'RainToday' in df.columns:
             if df['RainToday'].dtype == object:
                 df['RainToday'] = df['RainToday'].map({"Yes": 1, "No": 0})
@@ -99,45 +99,45 @@ def _preprocess_train_valid(train_df: pd.DataFrame, valid_df: pd.DataFrame, keep
         else:
             valid = df
 
-    # Aplicação de encoding cíclico para direções de vento
+    # Aplica o encoding cíclico nas direções de vento
     train = _encode_wind_directions_cyclic(train)
     valid = _encode_wind_directions_cyclic(valid)
 
     # Tratamento da coluna Location baseado no parâmetro
     if not keep_location:
-        # Drop coluna location
+        # Remove a coluna Location
         for df in (train, valid):
             if LOCATION_COL in df.columns:
                 df.drop(columns=[LOCATION_COL], inplace=True)
     else:
-        # Encode Location as categorical for centralized comparison
+        # Codifica Location como categórica para comparação com o modelo centralizado
         if LOCATION_COL in train.columns and LOCATION_COL in valid.columns:
-            # Usa categorias do treino como referência
+            # Usa as categorias do treino como referência
             train[LOCATION_COL] = pd.Categorical(train[LOCATION_COL])
             location_categories = train[LOCATION_COL].cat.categories
             
-            # Aplica mesmas categorias ao valid (trata localizações não vistas)
+            # Aplica as mesmas categorias ao conjunto de validação
             valid[LOCATION_COL] = pd.Categorical(
                 valid[LOCATION_COL], 
                 categories=location_categories
             )
             
-            # Conversão para códigos
+            # Converte para códigos numéricos
             train[LOCATION_COL] = train[LOCATION_COL].cat.codes
             valid[LOCATION_COL] = valid[LOCATION_COL].cat.codes
             
-            # Trata -1 (categorias não vistas em valid) -> substitui com 0
+            # Trata -1 (categorias não vistas na validação) substituindo por 0
             if (valid[LOCATION_COL] == -1).any():
                 valid[LOCATION_COL] = valid[LOCATION_COL].replace(-1, 0)
 
-    # Separação de features (X) e target (y)
+    # Separa features (X) e alvo (y)
     y_train = train[LABEL_COL].values if LABEL_COL in train.columns else None
     y_valid = valid[LABEL_COL].values if LABEL_COL in valid.columns else None
 
     X_train = train.drop(columns=[LABEL_COL], errors="ignore")
     X_valid = valid.drop(columns=[LABEL_COL], errors="ignore")
 
-    # Conversão de colunas não-numéricas para numérico e imputação com mediana do treino
+    # Converte colunas não numéricas para numérico e imputa com a mediana do treino
     numeric_cols = X_train.select_dtypes(include=[np.number]).columns.tolist()
 
     non_numeric = [c for c in X_train.columns if c not in numeric_cols]
@@ -147,23 +147,23 @@ def _preprocess_train_valid(train_df: pd.DataFrame, valid_df: pd.DataFrame, keep
     
     numeric_cols = X_train.select_dtypes(include=[np.number]).columns.tolist()
 
-    # Garantia de que X_valid possui as mesmas colunas que X_train
+    # Garante que X_valid tenha as mesmas colunas de X_train
     for c in numeric_cols:
         if c not in X_valid.columns:
             X_valid[c] = np.nan
     
-    # Remove colunas extras em X_valid que não estão no treino
+    # Remove colunas extras de X_valid que não existem no treino
     extra_cols = [c for c in X_valid.columns if c not in numeric_cols]
     if extra_cols:
         X_valid.drop(columns=extra_cols, inplace=True)
 
-    # Imputação de colunas numéricas com mediana do treino
+    # Imputa colunas numéricas com a mediana do treino
     for c in numeric_cols:
         median = X_train[c].median()
         X_train[c] = X_train[c].fillna(median)
         X_valid[c] = X_valid[c].fillna(median)
 
-    # Criação de objetos DMatrix para XGBoost
+    # Cria os objetos DMatrix para o XGBoost
     feature_names = X_train.columns.tolist()
     dtrain = xgb.DMatrix(X_train.values, label=y_train, feature_names=feature_names) if y_train is not None else xgb.DMatrix(X_train.values, feature_names=feature_names)
     dvalid = xgb.DMatrix(X_valid.values, label=y_valid, feature_names=feature_names) if y_valid is not None else xgb.DMatrix(X_valid.values, feature_names=feature_names)
@@ -181,20 +181,80 @@ def load_data(partition_id, keep_location=False):
         keep_location: Se True, mantém Location como feature (para experimentos de comparação)
                       Se False, remove Location (padrão para aprendizado federado)
     
-    Returns:
+    Retorna:
         tuple: (train_dmatrix, valid_dmatrix, num_train, num_val)
     """
-    # Construção do caminho para o dataset (relativo a este arquivo)
+    # Caminho relativo esperado para o dataset
+    rel_dataset = Path("datasets") / "rain_australia" / "weatherAUS_cleaned.csv"
+
+    # Locais candidatos para busca, na ordem:
+    # 1) layout do repositório relativo a este arquivo
+    # 2) diretório de trabalho atual
+    # 3) pasta datasets do app empacotado pelo Flower
+    candidates = []
     script_dir = Path(__file__).parent
-    project_root = script_dir.parent.parent
-    csv_path = project_root / "datasets" / "rain_australia" / "weatherAUS_cleaned.csv"
-    
+    candidates.append(script_dir.parent.parent / rel_dataset)  # repo root style
+    candidates.append(Path.cwd() / rel_dataset)  # running from workspace root
+    candidates.append(Path.home() / ".flwr" / "apps" / "datasets" / "rain_australia" / "weatherAUS_cleaned.csv")
+
+    # Também sobe alguns níveis a partir deste arquivo para ser robusto quando
+    # o app estiver empacotado
+    for i, anc in enumerate(script_dir.parents):
+        candidates.append(anc / rel_dataset)
+        if i >= 6:
+            break
+
+    # Sobe a partir do diretório atual para encontrar a raiz do repositório
+    cwd = Path.cwd().resolve()
+    candidates.append(cwd / rel_dataset)
+    for i, anc in enumerate(cwd.parents):
+        candidates.append(anc / rel_dataset)
+        if i >= 6:
+            break
+
+    # Remove duplicatas preservando a ordem
+    seen = set()
+    candidates_filtered = []
+    for p in candidates:
+        p = p.resolve() if p.exists() else p
+        if str(p) not in seen:
+            seen.add(str(p))
+            candidates_filtered.append(p)
+
+    csv_path = None
+    tried = []
+    for cand in candidates_filtered:
+        tried.append(str(cand))
+        if cand.exists():
+            csv_path = cand
+            break
+
+    if csv_path is None:
+        raise FileNotFoundError(
+            "Could not find weatherAUS_cleaned.csv. Tried these locations:\n  " +
+            "\n  ".join(tried)
+        )
+
     df = pd.read_csv(csv_path)
-    
+
     if df.empty:
         raise ValueError(f"Dataset is empty: {csv_path}")
+
+    # Define project_root relativo ao local do dataset para que a lógica
+    # seguinte (índices de treino/validação/teste) funcione tanto no repositório
+    # quanto no app empacotado.
+    # Se csv_path for .../repo/datasets/rain_australia/weatherAUS_cleaned.csv,
+    # então csv_path.parents[2] == repo (raiz correta do projeto).
+    try:
+        if len(csv_path.parents) >= 3:
+            project_root = csv_path.parents[2]
+        else:
+            project_root = csv_path.parent.parent
+    except Exception:
+        project_root = csv_path.parent.parent
     
-    # Carregamento de índices FIXOS train/val/test (para comparação com centralizados e PyTorch)
+    # Carrega os índices FIXOS de treino/validação/teste (para comparação com
+    # os modelos centralizados e com o PyTorch federado)
     train_indices_path = project_root / "datasets" / "train_indices.csv"
     val_indices_path = project_root / "datasets" / "val_indices.csv"
     test_indices_path = project_root / "datasets" / "test_indices.csv"
@@ -213,7 +273,7 @@ def load_data(partition_id, keep_location=False):
     else:
         print(f"   AVISO: train/val_indices.csv não encontrado! Usando divisão aleatória.")
     
-    # Obtenção de localizações únicas e atribuição para esta partição
+    # Obtém as localizações únicas e atribui a partição atual
     locations = sorted(df[LOCATION_COL].unique())
     
     if partition_id >= len(locations):
@@ -228,11 +288,11 @@ def load_data(partition_id, keep_location=False):
     if partition_data.empty:
         raise ValueError(f"Partition {partition_id} (Location: {client_location}) has no data!")
     
-    # Divisão usando índices FIXOS se disponíveis
+    # Divide usando índices FIXOS, se disponíveis
     if use_fixed_split:
-        # Obtém índices que pertencem a esta localização E estão nos conjuntos train/val
-        # NOTA: Para treinamento FL, usamos train para treino e VAL para validação local
-        # (conjunto test é reservado apenas para avaliação final)
+        # Obtém índices que pertencem a esta localização e estão nos conjuntos
+        # train/val. Para o treinamento federado, usamos train para treino e val
+        # para validação local; test fica reservado para a avaliação final.
         partition_indices = set(partition_data.index)
         
         train_mask = partition_data.index.isin(train_global_indices)
@@ -250,14 +310,14 @@ def load_data(partition_id, keep_location=False):
                 stratify=partition_data[LABEL_COL]
             )
     else:
-        # Fallback: divisão aleatória 90/10 (train/val, test é separado)
+        # Fallback: divisão aleatória 90/10 (train/val, test fica separado)
         from sklearn.model_selection import train_test_split
         train_df, valid_df = train_test_split(
             partition_data, test_size=0.1, random_state=42,
             stratify=partition_data[LABEL_COL]
         )
     
-    # Preprocessamento e obtenção de objetos DMatrix
+    # Preprocessa e cria os objetos DMatrix
     train_dmatrix, valid_dmatrix = _preprocess_train_valid(train_df, valid_df, keep_location=keep_location)
     
     num_train = len(train_df)
@@ -275,8 +335,8 @@ def replace_keys(input_dict, match="-", target="_"):
         match: String a ser substituída
         target: String de substituição
     
-    Returns:
-        Novo dicionário com chaves modificadas
+    Retorna:
+        Novo dicionário com as chaves modificadas
     """
     new_dict = {}
     for key, value in input_dict.items():

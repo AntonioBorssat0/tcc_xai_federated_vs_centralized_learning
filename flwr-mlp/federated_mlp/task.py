@@ -69,7 +69,7 @@ def encode_wind_directions(df):
             dir_to_rad.update({np.nan: 0, "NA": 0, None: 0})
             
             # Conversão para ângulos e depois para componentes sin/cos
-            angles = df[col].map(dir_to_rad)
+            angles = df[col].apply(lambda value: dir_to_rad.get(value, 0.0))
             df[f"{col}_sin"] = np.sin(angles)
             df[f"{col}_cos"] = np.cos(angles)
             df.drop(columns=[col], inplace=True)

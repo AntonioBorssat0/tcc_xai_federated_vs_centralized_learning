@@ -44,24 +44,40 @@ min-available-clients = 44       # Minimum clients required to start training
 
 # ===== CLIENT TRAINING CONFIGURATION =====
 local-epochs = 5                # Number of local epochs per client per round
-batch-size = 32
-learning-rate = 0.0014015879193167
+batch-size = 256
+learning-rate = 0.0015055293499006094
 test-split = 0.2                # Train/test split ratio (0.2 = 80/20)
 
 # ===== MODEL ARCHITECTURE =====
-hidden-layer-1 = 256
-hidden-layer-2 = 80
-hidden-layer-3 = 64
-dropout-1 = 0.158772267531727
-dropout-2 = 0.199045808970259
+hidden-layer-1 = 192
+hidden-layer-2 = 64
+hidden-layer-3 = 48
+dropout-1 = 0.21755581922394637
+dropout-2 = 0.19555864957756114
 
 # ===== DATA CONFIGURATION =====
 use-location-feature = false    # Include Location as a feature (requires one-hot encoding)
 
 # Default federation to use when running the app
-[tool.flwr.federations]
-default = "local-simulation"
 
-# Local simulation federation with 44 virtual SuperNodes
-[tool.flwr.federations.local-simulation]
-options.num-supernodes = 44
+#######################################################################
+# CONFIGURATION MIGRATION NOTICE:
+#
+# What was previously called "federation config" for SuperLink
+# connections in pyproject.toml has been renamed and moved.
+#
+# These settings are now **SuperLink connection configuration**
+# and are defined in the Flower configuration file.
+#
+# The entries below are commented out intentionally and are kept
+# only as a migration reference.
+#
+# Docs: https://flower.ai/docs/framework/ref-flower-configuration.html
+#######################################################################
+
+# [tool.flwr.federations]
+# default = "local-simulation"
+
+# # Local simulation federation with 44 virtual SuperNodes
+# [tool.flwr.federations.local-simulation]
+# options.num-supernodes = 44

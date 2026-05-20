@@ -1,0 +1,3 @@
+strategy = "cyclic"  # Options: "bagging" or "cyclic"
+# Relative path resolved by the server against the flwr-xgboost app root
+models_dir = "models"

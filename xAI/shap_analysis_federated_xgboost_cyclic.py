@@ -114,7 +114,7 @@ def load_xgboost_model(model_path: str):
             bst_temp.load_model(model_path)
             print(f"Modelo carregado do JSON")
         
-        # Salva em JSON temporário e aplica fix do base_score
+        # Salva em JSON temporário e aplica correção do `base_score`
         print(f"   Aplicando correção do base_score...")
         tmp_json_1 = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
         tmp_json_1.close()

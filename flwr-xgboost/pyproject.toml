@@ -1,6 +1,6 @@
 # =====================================================================
-# Federated XGBoost for Australian Weather Rain Prediction
-# Supports both Bagging and Cyclic training strategies
+# XGBoost Federado para previsão de chuva na Austrália
+# Suporta as estratégias Bagging e Cyclic
 # =====================================================================
 
 [build-system]
@@ -31,10 +31,12 @@ publisher = "Antonio"
 serverapp = "federated_xgboost.server_app:app"
 clientapp = "federated_xgboost.client_app:app"
 
-# ===== TRAINING STRATEGY =====
-# Choose: "bagging" or "cyclic"
+# ===== ESTRATÉGIA DE TREINO =====
+# Escolha: "bagging" ou "cyclic"
 [tool.flwr.app.config]
 strategy = "cyclic"  # Options: "bagging" or "cyclic"
+# Opcional: permite que o run-config especifique o diretório de saída dos modelos (relativo ou absoluto)
+models_dir = "models"
 
 # ===== CYCLIC STRATEGY CONFIGURATION =====
 # Sequential training: one client per round, each adds trees incrementally
@@ -42,42 +44,58 @@ strategy = "cyclic"  # Options: "bagging" or "cyclic"
 num-server-rounds-cyclic = 44    # 1 round per client (44 locations, fixed by architecture)
 local-epochs-cyclic = 5          # 5 trees per client (total: 44×5 = 220 trees)
 
-# ===== BAGGING STRATEGY CONFIGURATION =====
-# Parallel training: all clients train simultaneously, then aggregate
-# Rationale: Fixed data partitions → Only 1 round to avoid overfitting
-# With fixed partitions, multiple rounds = re-training on same data = memorization!
-# Pure bagging: 1 round × 44 clients × 5 trees = 220 trees (aligned with cyclic)
+# ===== CONFIGURAÇÃO DA ESTRATÉGIA BAGGING =====
+# Treino paralelo: todos os clientes treinam simultaneamente e depois ocorre agregação
+# Justificativa: partições de dados fixas → usar apenas 1 rodada para evitar sobreajuste
+# Com partições fixas, múltiplas rodadas re-treinariam sobre os mesmos dados (memorização)
+# Bagging puro: 1 rodada × 44 clientes × 5 árvores = 220 árvores (equivalente ao cyclic)
 num-server-rounds-bagging = 1    # Only 1 round (pure bagging, no overfitting)
 local-epochs-bagging = 5         # 5 trees per client (total: 44×5 = 220 trees)
 
-# ===== SHARED CONFIGURATION =====
+# ===== CONFIGURAÇÃO COMPARTILHADA =====
 fraction-train = 1.0        # Bagging: % of clients per round; Cyclic: ignored (always 1 client)
 fraction-evaluate = 1.0     # % of clients for evaluation
 
-# ===== DATA CONFIGURATION =====
-keep-location = false       # false: drop Location (federated default)
-                           # true: encode Location as feature
+# ===== CONFIGURAÇÃO DE DADOS =====
+keep-location = false       # false: descarta Location (padrão federado)
+                           # true: codifica Location como feature
 
-# ===== XGBOOST HYPERPARAMETERS =====
-# Based on best hyperparameters from centralized training
-# Note: These are automatically synchronized via sync_hyperparameters.ps1
+# ===== HIPERPARÂMETROS XGBOOST =====
+# Baseados nos melhores hiperparâmetros do treinamento centralizado
+# Observação: estes valores são sincronizados automaticamente via sync_hyperparameters.ps1
 params.objective = "binary:logistic"
-params.eta = 0.0398532599330044
+params.eta = 0.055965356054258765
 params.max-depth = 6
-params.min-child-weight = 1
-params.gamma = 0.399713685294389
-params.subsample = 0.723611953058621
-params.colsample-bytree = 0.878466831713619
+params.min-child-weight = 7
+params.gamma = 0.12023214745973859
+params.subsample = 0.7058191234594904
+params.colsample-bytree = 0.8306090261541431
 params.eval-metric = "aucpr"
-params.scale-pos-weight = 3.51387619917771
+params.scale-pos-weight = 3.5138761991777065
 params.nthread = 16
 params.tree-method = "hist"
-params.reg-alpha = 0.000357124347353669
-params.reg-lambda = 0.00344698976144497
+params.reg-alpha = 4.16783955080239E-07
+params.reg-lambda = 7.28837310413845E-07
 
 # ===== FEDERATION CONFIGURATION =====
-[tool.flwr.federations]
-default = "local-simulation"
 
-[tool.flwr.federations.local-simulation]
-options.num-supernodes = 44  # 44 clients (one per Location)
+#######################################################################
+# CONFIGURATION MIGRATION NOTICE:
+#
+# What was previously called "federation config" for SuperLink
+# connections in pyproject.toml has been renamed and moved.
+#
+# These settings are now **SuperLink connection configuration**
+# and are defined in the Flower configuration file.
+#
+# The entries below are commented out intentionally and are kept
+# only as a migration reference.
+#
+# Docs: https://flower.ai/docs/framework/ref-flower-configuration.html
+#######################################################################
+
+# [tool.flwr.federations]
+# default = "local-simulation"
+
+# [tool.flwr.federations.local-simulation]
+# options.num-supernodes = 44  # 44 clients (one per Location)

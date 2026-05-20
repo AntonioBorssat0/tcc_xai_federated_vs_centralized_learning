@@ -22,6 +22,35 @@ app = ServerApp()
 training_history = []
 
 
+def _find_app_root(start_path: Path) -> Path:
+    """Find the flwr-xgboost project root."""
+    target_component = 'serverapp = "federated_xgboost.server_app:app"'
+    search_roots = [start_path, *start_path.parents, Path.cwd(), *Path.cwd().parents]
+
+    for ancestor in search_roots:
+        candidate_root = ancestor / "flwr-xgboost"
+        pyproject = candidate_root / "pyproject.toml"
+        if pyproject.exists():
+            try:
+                text = pyproject.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            if target_component in text:
+                return candidate_root
+
+    for ancestor in search_roots:
+        pyproject = ancestor / "pyproject.toml"
+        if pyproject.exists():
+            try:
+                text = pyproject.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            if target_component in text:
+                return ancestor
+
+    return start_path
+
+
 def log_evaluation_metrics(server_round, replies):
     """
     Registra métricas de avaliação dos clientes.
@@ -33,7 +62,6 @@ def log_evaluation_metrics(server_round, replies):
     if not replies:
         return
     
-    # Extração de AUCPR de todas as mensagens dos clientes
     aucpr_values = []
     for msg in replies:
         if hasattr(msg, 'content') and 'metrics' in msg.content:
@@ -93,7 +121,7 @@ def save_training_history(history, strategy_name, models_dir):
     print(f"   Rodadas registradas: {len(df)}")
     
     if 'aucpr_mean' in df.columns:
-        print(f"   Intervalo AUCPR: {df['aucpr_mean'].min():.4f} → {df['aucpr_mean'].max():.4f}")
+        print(f"   Intervalo AUCPR: {df['aucpr_mean'].min():.4f} -> {df['aucpr_mean'].max():.4f}")
         best_round = int(df['aucpr_mean'].idxmax()) + 1
         print(f"   Melhor AUCPR: {df['aucpr_mean'].max():.4f} (Rodada {best_round})")
 
@@ -108,10 +136,8 @@ def main(grid: Grid, context: Context) -> None:
         context: Contexto da execução com configurações
     """
     
-    # Read strategy from config
     strategy_name = context.run_config.get("strategy", "bagging")  # "bagging" or "cyclic"
     
-    # Read num_rounds and local_epochs based on strategy
     if strategy_name == "bagging":
         num_rounds = context.run_config["num-server-rounds-bagging"]
     else:
@@ -123,13 +149,11 @@ def main(grid: Grid, context: Context) -> None:
     cfg = replace_keys(unflatten_dict(context.run_config))
     params = cfg["params"]
 
-    # Inicialização do modelo global (vazio no início)
     global_model = b""
     arrays = ArrayRecord([np.frombuffer(global_model, dtype=np.uint8)])
 
     training_history.clear()
     
-    # Seleção de estratégia baseada na configuração
     if strategy_name == "cyclic":
         print("\n" + "="*80)
         print("FEDERATED XGBOOST - TREINAMENTO CÍCLICO")
@@ -163,15 +187,28 @@ def main(grid: Grid, context: Context) -> None:
         num_rounds=num_rounds,
     )
 
-    # Salvamento do modelo final em disco
     bst = xgb.Booster(params=params)
     global_model = bytearray(result.arrays["0"].numpy().tobytes())
     bst.load_model(global_model)
 
-    # Determinação do caminho de salvamento baseado na estratégia
-    script_dir = Path(__file__).parent
-    models_dir = script_dir.parent / "models"
-    models_dir.mkdir(exist_ok=True)
+    models_dir_override = None
+    try:
+        models_dir_override = context.run_config.get("models_dir")
+    except Exception:
+        models_dir_override = None
+
+    if models_dir_override:
+        p = Path(models_dir_override)
+        if not p.is_absolute():
+            app_root = _find_app_root(Path(__file__).resolve())
+            models_dir = (app_root / p).resolve()
+        else:
+            models_dir = p.expanduser().resolve()
+        models_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        app_root = _find_app_root(Path(__file__).resolve())
+        models_dir = (app_root / "models").resolve()
+        models_dir.mkdir(parents=True, exist_ok=True)
     
     model_json = models_dir / f"global_model_{strategy_name}_final.json"
 
@@ -183,12 +220,10 @@ def main(grid: Grid, context: Context) -> None:
     
     bst.save_model(str(model_json))
     
-    # Salvamento em formato .pt para compatibilidade com análise SHAP
     pt_model_path = models_dir / f"global_model_{strategy_name}_final.pt"
     print(f"   Formato binário: {pt_model_path}")
     bst.save_model(str(pt_model_path))
 
-    # Salvamento em formato JOBLIB padronizado
     joblib_path = models_dir / f"global_model_{strategy_name}_final.joblib"
     model_data = {
         'best_model': bst,
